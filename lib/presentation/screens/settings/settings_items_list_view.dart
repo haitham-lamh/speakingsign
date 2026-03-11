@@ -5,9 +5,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:speaking_sign/config/theme/app_colors.dart';
 import 'package:speaking_sign/controller/settings/settings_controller.dart';
 import 'package:speaking_sign/data/models/settings_item_model.dart';
-import 'package:speaking_sign/presentation/screens/settings/dashboard/add_animation_view.dart';
 import 'package:speaking_sign/presentation/screens/settings/select_theme_dialog.dart';
-import 'package:speaking_sign/presentation/screens/settings/speed_management_bottom_sheet.dart';
 import 'package:speaking_sign/presentation/widgets/setting_item_card.dart';
 
 class SettingsItemsListView extends StatelessWidget {
@@ -47,60 +45,33 @@ class SettingsItemsListView extends StatelessWidget {
       ),
 
       SettingsItemModel(
-        title: 'إدارة السرعة',
-        icon: Icons.speed_rounded,
-        isEnabled: true,
-        onTap: () {
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.transparent,
-            isScrollControlled: true,
-            builder: (context) {
-              return Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: colors.wordCard,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: SpeedManagementBottomSheet(),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      SettingsItemModel(
-        title: 'إضافة حركة جديدة',
+        title: 'المقترحات',
         icon: Icons.add_circle_outline_rounded,
         onTap: () {
-          Navigator.pushNamed(context, AddAnimationView.routeName);
+          // Navigator.pushNamed(context, AddAnimationView.routeName);
+          controller.navigateToProposals();
         },
       ),
       SettingsItemModel(
         title: 'الاتصال بقفاز الترجمة',
         icon: Icons.phonelink_rounded,
+        onTap: () {
+          controller.navigateToConctiontheglavs();
+        },
       ),
       SettingsItemModel(
-        title: 'إشعارات التطبيق',
-        icon: Icons.notifications_rounded,
+        title: 'كاميرا التدريب',
+        icon: Icons.phonelink_rounded,
+        onTap: () {
+          controller.navigateToCamera();
+        },
       ),
-      SettingsItemModel(title: 'اللغة', icon: Icons.language_rounded),
+
       SettingsItemModel(
         title: 'حول التطبيق',
         icon: Icons.info_rounded,
         onTap: () {
           controller.navigateToAboutView();
-        },
-      ),
-      SettingsItemModel(
-        title: 'مشاركة التطبيق',
-        icon: Icons.share_rounded,
-        onTap: () {
-          print("hesham");
         },
       ),
     ];

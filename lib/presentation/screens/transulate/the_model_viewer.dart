@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:speaking_sign/config/theme/app_colors.dart';
+import 'package:speaking_sign/controller/favorite/favoritewordscontroller.dart';
 import 'package:speaking_sign/controller/transulate/translate_controller.dart';
 
 class TheModelViewer extends StatelessWidget {
@@ -40,9 +41,9 @@ class TheModelViewer extends StatelessWidget {
                 shadowSoftness: 0.0,
                 exposure: 1.0,
 
-                cameraOrbit: "0deg 90deg auto",
-                minCameraOrbit: "auto 90deg auto",
-                maxCameraOrbit: "auto 90deg auto",
+                cameraOrbit: "0deg 90deg 2.5m",
+                minCameraOrbit: "auto 90deg 1m",
+                maxCameraOrbit: "auto 90deg 4m",
 
                 animationCrossfadeDuration: 500,
 
@@ -59,15 +60,34 @@ class TheModelViewer extends StatelessWidget {
           left: 40,
           child:
               hasFavBtn
-                  ? IconButton(
-                    alignment: Alignment.center,
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.favorite,
-                      color: colors.wordCardIcon,
-                      size: 32,
-                    ),
-                  )
+                  ? Obx(() {
+                    final translateController = Get.find<TranslateController>();
+                    final word = translateController.textController.text.trim();
+                    final favController = Get.put(FavoriteWordsController());
+
+                    final isFav = favController.isFavorite(word);
+
+                    return IconButton(
+                      alignment: Alignment.center,
+                      onPressed: () {
+                        if (word.isNotEmpty) {
+                          favController.toggleFavorite(word);
+                        } else {
+                          Get.snackbar(
+                            "تنبيه",
+                            "الرجاء إدخال كلمة أولاً",
+                            snackPosition: SnackPosition.BOTTOM,
+                            duration: const Duration(seconds: 2),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: isFav ? Colors.red : colors.wordCardIcon,
+                        size: 32,
+                      ),
+                    );
+                  })
                   : Container(),
         ),
 

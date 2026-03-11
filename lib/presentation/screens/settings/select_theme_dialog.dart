@@ -20,7 +20,7 @@ class SelectThemeBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          /// الـ سحب الصغير بالأعلى
+          
           Container(
             width: 45,
             height: 5,

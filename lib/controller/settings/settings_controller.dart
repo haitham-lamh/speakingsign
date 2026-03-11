@@ -28,7 +28,22 @@ class SettingsController extends GetxController {
 
   void navigateToAboutView() {
     Get.toNamed(AppRoutes.ABOUTAPP);
-    print("hesham hesham hesham hesham *******");
+    print("hesham   hesham *******");
+  }
+
+  void navigateToProposals() {
+    Get.toNamed(AppRoutes.ProposalsView);
+    print("hesham hesham hesham hesham");
+  }
+
+  void navigateToConctiontheglavs() {
+    Get.toNamed(AppRoutes.Conctiontheglavs);
+    print("hesham hesham hesham hesham");
+  }
+
+  void navigateToCamera() {
+    Get.toNamed(AppRoutes.Camera);
+    print("hesham hesham hesham hesham");
   }
 
   var selectedThemeIndex = 0.obs;

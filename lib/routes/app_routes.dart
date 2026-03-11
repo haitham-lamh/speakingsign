@@ -7,6 +7,10 @@ abstract class AppRoutes {
   static const ABOUTAPP = _Paths.ABOUTAPP;
   static const CustomCurvedBottomNavigationBar =
       _Paths.CustomCurvedBottomNavigationBar;
+  static const WordDetaileView = _Paths.WordDetaileView;
+  static const ProposalsView = _Paths.ProposalsView;
+  static const Conctiontheglavs = _Paths.Conctiontheglavs;
+  static const Camera = _Paths.Camera;
 }
 
 abstract class _Paths {
@@ -19,4 +23,8 @@ abstract class _Paths {
   static const ONBOARDING = '/OnboardingView';
   static const KEYBOARD = '/Keyboard';
   static const ABOUTAPP = '/AboutView';
+  static const WordDetaileView = '/WordDetaileView';
+  static const ProposalsView = '/ProposalsView';
+  static const Conctiontheglavs = '/Conctiontheglavs';
+  static const Camera = '/Camera';
 }

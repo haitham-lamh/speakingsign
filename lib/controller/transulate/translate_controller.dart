@@ -14,10 +14,10 @@ class TranslateController extends GetxController {
   var cameraEnabled = true.obs;
   var currentAnimation = "".obs;
   var speedValue = 0.0.obs;
+  var currentWord = "".obs;
 
   WebViewController? webViewController;
 
-  // القاموس الذي يربط الكلمات العربية بأسماء الأنميشن
   final animations = {"انا": "iam", "الان": "now", "مرحبا": "Hello"};
 
   @override
@@ -34,12 +34,12 @@ class TranslateController extends GetxController {
     super.onClose();
   }
 
-  // دالة مراقبة تغير النص وتفعيل الحركة
   void _onTextChanged() {
     String text = textController.text.trim();
+    currentWord.value = text;
     if (animations.containsKey(text)) {
       String animationName = animations[text]!;
-      // تشغيل الحركة فقط إذا كانت مختلفة عن الحركة الحالية أو إذا كان النموذج متوقفاً
+
       if (currentAnimation.value != animationName || !isPlaying.value) {
         currentAnimation.value = animationName;
         setAnimation(animationName);
@@ -47,7 +47,6 @@ class TranslateController extends GetxController {
     }
   }
 
-  // دالة التحكم في الصوت
   void listen() async {
     if (!isListening.value) {
       bool available = await speech.initialize();
@@ -68,7 +67,6 @@ class TranslateController extends GetxController {
     }
   }
 
-  // تعديل: زر التشغيل/الإيقاف يتحكم الآن في الـ WebView مباشرة
   void togglePlay() {
     if (webViewController == null) return;
 
@@ -85,7 +83,6 @@ class TranslateController extends GetxController {
     }
   }
 
-  // تبديل حالة الكاميرا
   void toggleCamera() {
     cameraEnabled.value = !cameraEnabled.value;
   }

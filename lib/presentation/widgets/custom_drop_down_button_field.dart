@@ -15,7 +15,7 @@ class CustomDropDownButtonField extends StatelessWidget {
   final void Function(String?)? onChanged;
   final void Function(String?)? onSaved;
 
-  final AppColors colors;
+  final Color colors;
 
   final String? category;
 
@@ -32,7 +32,7 @@ class CustomDropDownButtonField extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: colors.wordCardText,
+              color: colors,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -95,7 +95,7 @@ class CustomDropDownButtonField extends StatelessWidget {
               },
               decoration: InputDecoration(
                 filled: true,
-                fillColor: colors.wordCard,
+                fillColor: colors,
                 contentPadding: EdgeInsets.all(16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),

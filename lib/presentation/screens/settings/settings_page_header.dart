@@ -11,7 +11,7 @@ class SettingsPageHeader extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xffc77dff), Color(0xffc77dff)],
+          colors: [Color(0xff8B3DFF), Color(0xff8B3DFF)],
         ),
       ),
       width: double.infinity,

@@ -11,7 +11,7 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
     return Scaffold(
-      backgroundColor: Color(0xffc77dff),
+      backgroundColor: Color(0xff8B3DFF),
       body: Column(
         children: [
           SettingsPageHeader(),
@@ -45,9 +45,9 @@ class SettingsView extends StatelessWidget {
 
                           Positioned(
                             top: -230,
-                            left: 105,
+                            left: 118,
                             child: Image.asset(
-                              'assets/images/logo.png',
+                              'assets/images/logo3.png',
                               fit: BoxFit.cover,
                               width: 240,
                               height: 240,

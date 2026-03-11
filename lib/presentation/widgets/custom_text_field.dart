@@ -10,9 +10,12 @@ class CustomTextField extends StatelessWidget {
     required this.lableText,
     this.validator,
     this.onSaved,
+    this.textcolor = Colors.black,
   });
 
-  final AppColors colors;
+  final Color colors;
+  final Color textcolor;
+
   final void Function(String)? onChanged;
   final void Function(String?)? onSaved;
   final String lableText;
@@ -25,63 +28,28 @@ class CustomTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           Text(
             lableText,
             style: TextStyle(
-              color: colors.wordCardText,
+              color: textcolor,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
           SizedBox(height: 12),
           TextFormField(
-            textDirection: TextDirection.rtl,
             validator: validator,
             decoration: InputDecoration(
               filled: true,
-              fillColor: colors.wordCard,
+              fillColor: colors,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: Colors.transparent),
               ),
-              // suffixIcon: Container(
-              //   width: 57,
-              //   height: 60,
-              //   margin: EdgeInsets.only(right: 6),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       VerticalDivider(
-              //         thickness: 2,
-              //         indent: 15,
-              //         endIndent: 15,
-              //         color: Colors.grey,
-              //       ),
-              //       CircleAvatar(
-              //         backgroundColor: Colors.transparent,
-              //         child: IconButton(
-              //           onPressed: () {},
-              //           icon: Icon(
-              //             Icons.add_link_outlined,
-              //             color: colors.wordCardText,
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
               hintText: hintText,
-              hintTextDirection: TextDirection.rtl,
-
-              // prefixIcon: CircleAvatar(
-              //   backgroundColor: Colors.transparent,
-              //   child: IconButton(
-              //     onPressed: () {},
-              //     icon: Icon(Icons.mic, color: colors.wordCardText),
-              //   ),
-              // ),
             ),
             onChanged: onChanged,
             onSaved: onSaved,

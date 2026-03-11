@@ -10,7 +10,7 @@ import 'package:speaking_sign/presentation/screens/word_detaile/word_detaile_pag
 class WordDetaileView extends StatelessWidget {
   WordDetaileView({super.key});
 
-  static String routeName = '/wordDetaile';
+  // static String routeName = '/wordDetaile';
   final favoriteController = Get.find<FavoriteWordsController>();
   @override
   Widget build(BuildContext context) {
@@ -76,13 +76,16 @@ class WordDetaileView extends StatelessWidget {
                             ),
                             alignment: Alignment.center,
                             onPressed: () {
-                              favoriteController.addFavoriteWord(key);
+                              favoriteController.toggleFavorite(key);
                             },
-                            icon: Icon(
-                              Icons.favorite,
-                              color: colors.wordCardIcon,
-                              size: 32,
-                            ),
+                            icon: Obx(() {
+                              final isFav = favoriteController.isFavorite(key);
+                              return Icon(
+                                isFav ? Icons.favorite : Icons.favorite_border,
+                                color: isFav ? Colors.red : colors.wordCardIcon,
+                                size: 32,
+                              );
+                            }),
                           ),
                           SizedBox(width: 16),
                           Container(

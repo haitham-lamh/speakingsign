@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:speaking_sign/config/constants/constants.dart';
 import 'package:speaking_sign/presentation/screens/word_detaile/word_detaile_view.dart';
+import 'package:speaking_sign/routes/app_routes.dart';
 
 class DictionaryController extends GetxController {
   // ================================
@@ -66,7 +67,7 @@ class DictionaryController extends GetxController {
 
   /// عند الضغط على كلمة
   void onWordTapped(String word) {
-    Get.toNamed(WordDetaileView.routeName, arguments: word);
+    Get.toNamed(AppRoutes.WordDetaileView, arguments: word);
   }
 
   // ================================
