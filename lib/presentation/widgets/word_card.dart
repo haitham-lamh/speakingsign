@@ -24,42 +24,52 @@ class WordCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Stack(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Stack(
                 children: [
-                  Image.asset(
-                    kBaseImage,
-                    width: 160,
-                    height: 120,
-                    fit: BoxFit.contain,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image.asset(
+                        kBaseImage,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight * 0.65,
+                        fit: BoxFit.contain,
+                      ),
+                      SizedBox(height: constraints.maxHeight * 0.05),
+                      Text(
+                        text, 
+                        style: TextStyle(color: colors.wordCardText),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 12,),
-                  Text(text, style: TextStyle(color: colors.wordCardText)),
-                ],
-              ),
 
-              Positioned(
-                top: 2,
-                left: 2,
-                child: CircleAvatar(
-                  backgroundColor: Colors.transparent,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.favorite,
-                      color: colors.wordCardIcon,
-                      size: 25.0,
+                  Positioned(
+                    top: 2,
+                    left: 2,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.favorite,
+                          color: colors.wordCardIcon,
+                          size: constraints.maxHeight * 0.15 > 25 ? 25 : constraints.maxHeight * 0.15,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        }
       ),
     );
   }

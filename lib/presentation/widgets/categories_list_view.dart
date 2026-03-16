@@ -54,8 +54,7 @@ class CategoryItem extends StatelessWidget {
     final colors = Theme.of(context).extension<AppColors>()!;
     return AnimatedContainer(
       duration: Duration(milliseconds: 250),
-      width: 105,
-      padding: EdgeInsets.all(4),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       margin: EdgeInsets.only(
         left: 4,
         right: 4,

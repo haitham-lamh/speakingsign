@@ -13,7 +13,6 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
     return Scaffold(
-      extendBody: true,
       backgroundColor: colors.scaffoldBackground,
       body: Keyboard(),
     );

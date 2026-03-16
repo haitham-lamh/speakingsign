@@ -11,15 +11,31 @@ class DictionaryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(DictionaryController());
-
+    final controller = Get.put(DictionaryController());
     final colors = Theme.of(context).extension<AppColors>()!;
+
     return Scaffold(
-      extendBody: true,
       backgroundColor: colors.scaffoldBackground,
       body: Column(
         children: [
           CustomTopHeader(text: "قاموس الكلمات"),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              onChanged: controller.onSearchChanged,
+              decoration: InputDecoration(
+                hintText: "ابحث عن كلمة...",
+                prefixIcon: Icon(Icons.search, color: colors.wordCardText?.withOpacity(0.5) ?? Colors.grey),
+                filled: true,
+                fillColor: colors.navigaionBar,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              ),
+            ),
+          ),
           SizedBox(height: 8),
           CategoriesListView(),
           SizedBox(height: 8),

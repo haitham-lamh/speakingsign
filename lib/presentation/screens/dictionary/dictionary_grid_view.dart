@@ -12,23 +12,29 @@ class DictionaryGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<DictionaryController>();
 
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 24,
-        mainAxisSpacing: 16,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: controller.wordCount,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        final word = controller.getWordAt(index);
+    return Obx(
+      () => GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: (MediaQuery.sizeOf(context).width / 160).clamp(2, 6).floor(),
+          crossAxisSpacing: 24,
+          mainAxisSpacing: 16,
+        ),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: MediaQuery.paddingOf(context).bottom + 100,
+        ),
+        itemCount: controller.wordCount,
+        physics: const BouncingScrollPhysics(),
+        itemBuilder: (context, index) {
+          final word = controller.getWordAt(index);
 
-        return GestureDetector(
-          child: WordCard(text: word),
-          onTap: () => controller.onWordTapped(word),
-        );
-      },
+          return GestureDetector(
+            child: WordCard(text: word),
+            onTap: () => controller.onWordTapped(word),
+          );
+        },
+      ),
     );
   }
 }

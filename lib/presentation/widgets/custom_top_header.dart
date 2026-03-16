@@ -10,96 +10,106 @@ class CustomTopHeader extends StatelessWidget {
     return ClipPath(
       clipper: HeaderClipper(),
       child: Container(
-        height: 180,
+        height: (MediaQuery.sizeOf(context).height * 0.22).clamp(180.0, 250.0).toDouble() + MediaQuery.paddingOf(context).top,
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              // Color.fromARGB(255, 113, 46, 214),
               Color(0xff8B3DFF),
               Color(0xff9d4edd),
             ],
           ),
         ),
 
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned(
-              top: 30,
-              left: 40,
-              child: Icon(Icons.back_hand, size: 28, color: Colors.white30),
-            ),
-            Positioned(
-              top: 115,
-              left: 30,
-              child: Icon(Icons.spa_outlined, size: 28, color: Colors.white30),
-            ),
-            Positioned(
-              top: 55,
-              left: 120,
-              child: Icon(
-                Icons.spatial_audio_off_rounded,
-                size: 28,
-                color: Colors.white30,
-              ),
-            ),
-            Positioned(
-              top: 40,
-              right: 180,
-              child: Icon(Icons.star, size: 24, color: Colors.white30),
-            ),
-            Positioned(
-              top: 60,
-              right: 110,
-              child: Icon(
-                Icons.hearing_outlined,
-                size: 30,
-                color: Colors.white30,
-              ),
-            ),
+        child: Padding(
+          padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final w = constraints.maxWidth;
+              final h = constraints.maxHeight;
+              
+              return Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    top: h * 0.16,
+                    left: w * 0.1,
+                    child: const Icon(Icons.back_hand, size: 28, color: Colors.white30),
+                  ),
+                  Positioned(
+                    top: h * 0.63,
+                    left: w * 0.08,
+                    child: const Icon(Icons.spa_outlined, size: 28, color: Colors.white30),
+                  ),
+                  Positioned(
+                    top: h * 0.3,
+                    left: w * 0.3,
+                    child: const Icon(
+                      Icons.spatial_audio_off_rounded,
+                      size: 28,
+                      color: Colors.white30,
+                    ),
+                  ),
+                  Positioned(
+                    top: h * 0.22,
+                    right: w * 0.45,
+                    child: const Icon(Icons.star, size: 24, color: Colors.white30),
+                  ),
+                  Positioned(
+                    top: h * 0.33,
+                    right: w * 0.27,
+                    child: const Icon(
+                      Icons.hearing_outlined,
+                      size: 30,
+                      color: Colors.white30,
+                    ),
+                  ),
 
-            // ------- العنوان ---------
-            Positioned(
-              left: 15,
-              top: 80,
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 22,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-
-            // ------- زر البحث ---------
-            Positioned(
-              top: 30,
-              right: 20,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: CircleAvatar(
-                  backgroundColor: Color(0xff8B3DFF),
-                  radius: 26,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 25,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.search,
-                        size: 32,
-                        color: Color(0xff8B3DFF),
+                  // ------- العنوان ---------
+                  Positioned(
+                    left: w * 0.04,
+                    top: h * 0.4,
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                ),
-              ),
-            ),
-          ],
+                  // ------- زر البحث ---------
+                  /*
+                  عند الضرورة فقط
+                  Positioned(
+                    top: 30,
+                    right: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: CircleAvatar(
+                        backgroundColor: Color(0xff8B3DFF),
+                        radius: 26,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 25,
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.search,
+                              size: 32,
+                              color: Color(0xff8B3DFF),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),*/
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

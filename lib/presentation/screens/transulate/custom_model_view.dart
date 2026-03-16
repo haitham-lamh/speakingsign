@@ -74,6 +74,29 @@ class CustomModelView extends StatelessWidget {
                         // animationSpeed: 0.5,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => controller.translateText(),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: colors.navigaionBar,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: colors.wordCardIcon!.withOpacity(0.3),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          color: colors.wordCardText,
+                          size: 28,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

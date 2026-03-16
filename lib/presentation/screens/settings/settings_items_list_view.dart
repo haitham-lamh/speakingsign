@@ -74,6 +74,14 @@ class SettingsItemsListView extends StatelessWidget {
           controller.navigateToAboutView();
         },
       ),
+
+      SettingsItemModel(
+        title: 'تحديث النماذج والملفات',
+        icon: Icons.system_update_alt_rounded,
+        onTap: () {
+          controller.checkForUpdates(context);
+        },
+      ),
     ];
     return ListView.builder(
       itemCount: settingItems.length,

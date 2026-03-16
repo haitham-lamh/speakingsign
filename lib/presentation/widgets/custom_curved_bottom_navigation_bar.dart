@@ -29,7 +29,6 @@ class CustomCurvedBottomNavigationBar extends StatelessWidget {
     const Color inactiveColor = Color(0xff8B3DFF);
 
     return Scaffold(
-      extendBody: true,
       backgroundColor: colors.scaffoldBackground,
       body: Obx(
         () =>

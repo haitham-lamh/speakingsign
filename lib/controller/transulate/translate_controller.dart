@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+import 'package:speaking_sign/config/constants/constants.dart';
+import 'package:speaking_sign/data/models/animation_model.dart';
 
 class TranslateController extends GetxController {
   late stt.SpeechToText speech;
@@ -18,13 +22,38 @@ class TranslateController extends GetxController {
 
   WebViewController? webViewController;
 
-  final animations = {"انا": "iam", "الان": "now", "مرحبا": "Hello"};
+  var activeGlbPath = 'assets/glb/new_charcter2.glb'.obs;
+  final Map<String, String> animations = {};
 
   @override
   void onInit() {
     super.onInit();
     speech = stt.SpeechToText();
     textController.addListener(_onTextChanged);
+    _loadDynamicData();
+  }
+
+  Future<void> _loadDynamicData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedPath = prefs.getString('active_glb_model');
+      if (savedPath != null && savedPath.isNotEmpty) {
+        activeGlbPath.value = 'file://$savedPath';
+      }
+
+      final box = Hive.box<AnimationModel>(kAnimationBox);
+      if (box.isNotEmpty) {
+        animations.clear();
+        for (var anim in box.values) {
+          animations[anim.nameAr] = anim.animationCode;
+        }
+      } else {
+        // Fallback or leave empty
+        animations.addAll({"انا": "iam", "الان": "now", "مرحبا": "Hello"});
+      }
+    } catch (e) {
+      print("Error loading dynamic data: \$e");
+    }
   }
 
   @override
@@ -34,17 +63,23 @@ class TranslateController extends GetxController {
     super.onClose();
   }
 
-  void _onTextChanged() {
+  void translateText() {
     String text = textController.text.trim();
+    if (text.isEmpty) return;
+
     currentWord.value = text;
+
     if (animations.containsKey(text)) {
       String animationName = animations[text]!;
-
-      if (currentAnimation.value != animationName || !isPlaying.value) {
-        currentAnimation.value = animationName;
-        setAnimation(animationName);
-      }
+      currentAnimation.value = animationName;
+      setAnimation(animationName);
+    } else {
+      print("No animation found for word: $text");
     }
+  }
+
+  void _onTextChanged() {
+    currentWord.value = textController.text.trim();
   }
 
   void listen() async {
@@ -85,8 +120,32 @@ class TranslateController extends GetxController {
 
   void toggleCamera() {
     cameraEnabled.value = !cameraEnabled.value;
+    if (webViewController != null) {
+      if (cameraEnabled.value) {
+        webViewController!.runJavaScript("""
+          (function() {
+            var mv = document.querySelector('#model-viewer');
+            if (mv) {
+              mv.setAttribute('camera-controls', 'true');
+              mv.removeAttribute('disable-zoom');
+              mv.removeAttribute('disable-pan');
+            }
+          })();
+        """);
+      } else {
+        webViewController!.runJavaScript("""
+          (function() {
+            var mv = document.querySelector('#model-viewer');
+            if (mv) {
+              mv.removeAttribute('camera-controls');
+              mv.setAttribute('disable-zoom', 'true');
+              mv.setAttribute('disable-pan', 'true');
+            }
+          })();
+        """);
+      }
+    }
   }
-
   void increaseSpeed() {
     speedValue.value += 0.5;
   }
@@ -98,9 +157,12 @@ class TranslateController extends GetxController {
   void setWebViewController(WebViewController controller) {
     webViewController = controller;
     if (currentAnimation.value.isNotEmpty) {
+      isPlaying.value = false;
       Future.delayed(const Duration(milliseconds: 500), () {
         setAnimation(currentAnimation.value);
       });
+    } else {
+      isPlaying.value = false;
     }
   }
 
@@ -110,10 +172,18 @@ class TranslateController extends GetxController {
     isPlaying.value = true;
 
     webViewController!.runJavaScript("""
-    const mv = document.querySelector('#model-viewer');
-    mv.animationName = "$name";
-    mv.currentTime = 0; // إعادة الحركة للبداية (ثانية 0)
-    mv.play();
-  """);
+      (function checkAndPlay() {
+        var mv = document.querySelector('#model-viewer');
+        if (mv) {
+          if (!mv.modelIsVisible) {
+            setTimeout(checkAndPlay, 200);
+            return;
+          }
+          mv.animationName = "$name";
+          mv.currentTime = 0;
+          mv.play();
+        }
+      })();
+    """);
   }
 }

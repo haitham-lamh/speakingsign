@@ -15,94 +15,115 @@ class ProposalsView extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(
-                  right: 24,
-                  left: 10,
-                  bottom: 24,
-                  top: 40,
-                ),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xff8B3DFF),
-                      Color.fromARGB(255, 174, 143, 220),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(
+                    right: 24,
+                    left: 10,
+                    bottom: 24,
+                    top: 40,
+                  ),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xff8B3DFF),
+                        Color.fromARGB(255, 174, 143, 220),
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(35),
+                      bottomRight: Radius.circular(35),
+                    ),
+                  ),
+
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "إرسال مقترح",
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          controller.navigateToSetting();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                        ),
+                      ),
                     ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(35),
-                    bottomRight: Radius.circular(35),
                   ),
                 ),
 
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "المقترحـــــات",
-                      style: TextStyle(
-                        fontFamily: 'Cairo',
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                const SizedBox(height: 30),
+
+
+
+                // Title Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextFormField(
+                    controller: controller.titleController,
+                    decoration: InputDecoration(
+                      labelText: 'عنوان المقترح',
+                      hintText: 'اكتب عنواناً مختصراً',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xff8B3DFF), width: 2),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () {
-                        controller.navigateToSetting();
-                      },
-                      icon: const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
+                    style: const TextStyle(fontFamily: 'Cairo'),
+                  ),
+                ),
+
+                // Suggestion Body Field
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextFormField(
+                    controller: controller.suggestionController,
+                    maxLines: 6,
+                    decoration: InputDecoration(
+                      labelText: 'تفاصيل المقترح',
+                      hintText: 'اكتب مقترحك أو النقد البناء هنا...',
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xff8B3DFF), width: 2),
                       ),
                     ),
-                  ],
+                    style: const TextStyle(fontFamily: 'Cairo'),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 32),
 
-              CustomTextField(
-                colors: Colors.white,
-                lableText: 'الكلمة عربي',
-                hintText: 'إدخل كلمة بالعربي',
-                onSaved: (value) {},
-                validator: (value) {},
-              ),
-
-              CustomTextField(
-                colors: Colors.white,
-                lableText: 'الفئة',
-                hintText: 'إدخل الفئة',
-                onSaved: (value) {},
-                validator: (value) {},
-              ),
-
-              CustomTextField(
-                colors: Colors.white,
-                lableText: 'شرح الحركة',
-                hintText: 'شـــرح الحركة',
-                onSaved: (value) {},
-                validator: (value) {},
-              ),
-
-              const SizedBox(height: 32),
-
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: CustomButton(
-                  text: 'إضافة الحركة',
-                  onTap: () {
-                    print("هشام هشام هشام ");
-                  },
+                // Send Button
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Obx(() => controller.isLoading.value
+                      ? const Center(child: CircularProgressIndicator(color: Color(0xff8B3DFF)))
+                      : CustomButton(
+                          text: 'إرسال المقترح',
+                          onTap: () {
+                            controller.sendSuggestion(context);
+                          },
+                        )),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -16,26 +16,20 @@ class Keyboard extends StatelessWidget {
     final colors = Theme.of(context).extension<AppColors>()!;
     return Scaffold(
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           CustomTopHeader2(text: "لوحة المفاتيح الإشارية"),
-          SizedBox(height: 120),
-          Container(
+          const SizedBox(height: 16),
+          Expanded(
             child: Column(
               children: [
-                Container(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Obx(
-                        () => Container(
-                          width: 330,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 20,
-                          ),
-
-                          child: SingleChildScrollView(
+                      Expanded(
+                        child: Obx(
+                          () => SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             reverse: true,
                             child: Text(
@@ -51,23 +45,20 @@ class Keyboard extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.only(right: 30),
-                        child: Text(
-                          ": النــص",
-                          style: TextStyle(
-                            fontFamily: "Cairo",
-                            color: Colors.purple,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const SizedBox(width: 16),
+                      const Text(
+                        ": النــص",
+                        style: TextStyle(
+                          fontFamily: "Cairo",
+                          color: Colors.purple,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 //خطط افقي
                 Divider(
                   color: Colors.black.withOpacity(0.2),
@@ -76,13 +67,13 @@ class Keyboard extends StatelessWidget {
                   endIndent: 20,
                 ),
                 Container(
-                  margin: const EdgeInsets.all(16.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   padding: const EdgeInsets.all(10.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.purple.shade300, width: 2),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  height: 100,
+                  height: 90,
                   child: Obx(
                     () => ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -96,7 +87,7 @@ class Keyboard extends StatelessWidget {
 
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Image.asset(sign.assetpath!, height: 80),
+                          child: Image.asset(sign.assetpath!, height: 70),
                         );
                       },
                     ),
@@ -104,11 +95,9 @@ class Keyboard extends StatelessWidget {
                 ),
 
                 // الكيبورد
-                Container(
-                  width: double.infinity,
-                  height: 400,
+                Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                     child: Column(
                       children: [
                         ...keboardlist.map((row) {
@@ -125,104 +114,102 @@ class Keyboard extends StatelessWidget {
                             ),
                           );
                         }).toList(),
-
-                        Row(
-                          children: [
-                            // مسح
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ElevatedButton(
-                                  onPressed: controller.deleteLast,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color.fromARGB(
-                                      255,
-                                      181,
-                                      115,
-                                      115,
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 55,
+                          child: Row(
+                            children: [
+                              // مسح
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: ElevatedButton(
+                                    onPressed: controller.deleteLast,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                        255,
+                                        181,
+                                        115,
+                                        115,
+                                      ),
+                                      padding: const EdgeInsets.all(0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'مســح',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontFamily: "Cairo",
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            // مسافة
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ElevatedButton(
-                                  onPressed: controller.addSpace,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey.shade200,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'مسافـــة',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontFamily: "Cairo",
-                                      fontWeight: FontWeight.bold,
+                                    child: const Text(
+                                      'مســح',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontFamily: "Cairo",
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
 
-                            // اذهب
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: ElevatedButton(
-                                  onPressed: controller.submitText,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromARGB(
-                                      255,
-                                      203,
-                                      168,
-                                      254,
+                              // مسافة
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: ElevatedButton(
+                                    onPressed: controller.addSpace,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.grey.shade200,
+                                      padding: const EdgeInsets.all(0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'اذهـــب',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontFamily: "Cairo",
-                                      fontWeight: FontWeight.bold,
+                                    child: const Text(
+                                      'مسافـــة',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontFamily: "Cairo",
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+
+                              // اذهب
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: ElevatedButton(
+                                    onPressed: controller.submitText,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color.fromARGB(
+                                        255,
+                                        203,
+                                        168,
+                                        254,
+                                      ),
+                                      padding: const EdgeInsets.all(0),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'اذهـــب',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontFamily: "Cairo",
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(height: 12),
                       ],
                     ),
                   ),

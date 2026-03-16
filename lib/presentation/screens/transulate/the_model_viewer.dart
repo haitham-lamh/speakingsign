@@ -29,13 +29,15 @@ class TheModelViewer extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: Obx(
               () => ModelViewer(
-                src: 'assets/glb/new_charcter2.glb',
+                src: controller.activeGlbPath.value,
                 alt: 'Custom Model',
                 id: 'model-viewer',
                 backgroundColor: Colors.transparent,
 
                 autoRotate: false,
                 cameraControls: controller.cameraEnabled.value,
+                disableZoom: !controller.cameraEnabled.value,
+                disablePan: !controller.cameraEnabled.value,
 
                 shadowIntensity: 1.0,
                 shadowSoftness: 0.0,
@@ -62,7 +64,8 @@ class TheModelViewer extends StatelessWidget {
               hasFavBtn
                   ? Obx(() {
                     final translateController = Get.find<TranslateController>();
-                    final word = translateController.textController.text.trim();
+                    // Observe currentWord.value instead of textController.text directly to ensure Rx reaction
+                    final word = translateController.currentWord.value; 
                     final favController = Get.put(FavoriteWordsController());
 
                     final isFav = favController.isFavorite(word);
@@ -75,7 +78,7 @@ class TheModelViewer extends StatelessWidget {
                         } else {
                           Get.snackbar(
                             "تنبيه",
-                            "الرجاء إدخال كلمة أولاً",
+                            "الرجاء إدخال كلمة وتشغيل الحركة أولاً",
                             snackPosition: SnackPosition.BOTTOM,
                             duration: const Duration(seconds: 2),
                           );

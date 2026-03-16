@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:speaking_sign/config/constants/constants.dart';
 import 'package:speaking_sign/core/services/shared_prefs_service.dart';
+import 'package:speaking_sign/data/models/animation_model.dart';
 import 'package:speaking_sign/presentation/screens/word_detaile/word_detaile_view.dart';
 import 'package:speaking_sign/routes/app_routes.dart';
 
@@ -58,7 +60,23 @@ class FavoriteWordsController extends GetxController {
         ),
       );
     } else {
-      final animationName = animations[word];
+      String? animationName;
+      try {
+        final box = Hive.box<AnimationModel>(kAnimationBox);
+        for (var anim in box.values) {
+          if (anim.nameAr == word) {
+            animationName = anim.animationCode;
+            break;
+          }
+        }
+      } catch (e) {
+        print("Error reading from hive: $e");
+      }
+
+      if (animationName == null || animationName.isEmpty) {
+        animationName = animations[word];
+      }
+
       if (animationName == null || animationName.isEmpty) {
         Get.snackbar(
           "",

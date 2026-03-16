@@ -17,11 +17,16 @@ class WordDetaileView extends StatelessWidget {
     final TranslateController controller = Get.put(TranslateController());
 
     final key = ModalRoute.of(context)!.settings.arguments as String;
-    var value = animations[key];
+    var value = controller.animations[key]; // Use dynamic map from controller
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.textController.text = key;
       if (value != null) {
         controller.currentAnimation.value = value;
+        // Trigger translation manually to start animation since auto-trigger is disabled
+        controller.translateText();
+      } else {
+        print("Warning: Animation for '$key' not found in dynamic map");
       }
     });
 
