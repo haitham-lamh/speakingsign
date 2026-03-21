@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
 import 'package:speaking_sign/config/constants/constants.dart';
 import 'package:speaking_sign/data/models/animation_model.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:speaking_sign/presentation/screens/settings/conction_theglavs/gemini_config.dart';
 
 class TranslateController extends GetxController {
   late stt.SpeechToText speech;
@@ -63,7 +65,7 @@ class TranslateController extends GetxController {
     super.onClose();
   }
 
-  void translateText() {
+  Future<void> translateText() async {
     String text = textController.text.trim();
     if (text.isEmpty) return;
 
@@ -74,7 +76,60 @@ class TranslateController extends GetxController {
       currentAnimation.value = animationName;
       setAnimation(animationName);
     } else {
-      print("No animation found for word: $text");
+      // Use Gemini to match the word dynamically
+      Get.snackbar("جاري البحث", "جاري البحث عن المعنى المطابق بالذكاء الاصطناعي...",
+          backgroundColor: Colors.blueAccent, colorText: Colors.white, duration: const Duration(seconds: 2));
+      
+      String? matchedWord = await _findClosestWordWithGemini(text);
+      if (matchedWord != null && animations.containsKey(matchedWord)) {
+        textController.text = matchedWord; // Update the UI
+        currentWord.value = matchedWord;
+        String animationName = animations[matchedWord]!;
+        currentAnimation.value = animationName;
+        setAnimation(animationName);
+        Get.snackbar("تصحيح تلقائي", "تم تحويل '$text' إلى '$matchedWord'", 
+            backgroundColor: Colors.green, colorText: Colors.white, duration: const Duration(seconds: 4));
+      } else {
+        Get.snackbar("غير موجود", "لا توجد إشارة مسجلة للكلمة '$text'", 
+            backgroundColor: Colors.orange, colorText: Colors.white, duration: const Duration(seconds: 4));
+        print("No animation found for word: $text");
+      }
+    }
+  }
+
+  Future<String?> _findClosestWordWithGemini(String inputWord) async {
+    if (GeminiConfig.apiKey.isEmpty || GeminiConfig.apiKey == 'YOUR_API_KEY_HERE') {
+      return null;
+    }
+    if (animations.isEmpty) {
+      return null;
+    }
+    try {
+      final model = GenerativeModel(
+        model: GeminiConfig.modelName,
+        apiKey: GeminiConfig.apiKey,
+      );
+      
+      List<String> availableWords = animations.keys.toList();
+      String wordsListStr = availableWords.join('، ');
+
+      final prompt = "لدي قائمة من الكلمات المسجلة في القاموس وهي: [$wordsListStr].\n"
+          "قام المستخدم بإدخال الكلمة: '$inputWord'.\n"
+          "مهمتك هي البحث عن أقرب كلمة من القاموس تطابق الكلمة المدخلة من حيث المعنى أو الجذر أو الاشتقاق (مثلاً إذا أدخل 'يعمل' والقاموس يحتوي على 'عمل' فتكون المطابقة صحيحة).\n"
+          "إذا وجدت مطابقة مناسبة، أعد الكلمة المطابقة من القاموس فقط بدون أي إضافات أو نصوص أخرى.\n"
+          "إذا لم تجد أي كلمة مناسبة، أعد الكلمة 'null'.";
+
+      final content = [Content.text(prompt)];
+      final response = await model.generateContent(content);
+      String? result = response.text?.trim();
+      
+      if (result != null && result != 'null' && result.isNotEmpty && availableWords.contains(result)) {
+         return result;
+      }
+      return null;
+    } catch (e) {
+      print("Gemini Matching Error: \$e");
+      return null;
     }
   }
 

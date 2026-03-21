@@ -74,7 +74,15 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
 
   // أدوات النطق والذكاء الاصطناعي
   final FlutterTts _flutterTts = FlutterTts();
-  GenerativeModel? _geminiModel;
+  GenerativeModel? get _geminiModel {
+    if (GeminiConfig.apiKey.isNotEmpty && GeminiConfig.apiKey != 'YOUR_API_KEY_HERE') {
+      return GenerativeModel(
+        model: GeminiConfig.modelName,
+        apiKey: GeminiConfig.apiKey,
+      );
+    }
+    return null;
+  }
 
   final Map<String, String> _languages = {
     "العربية (بدون ترجمة)": "ar",
@@ -107,7 +115,6 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
   void initState() {
     super.initState();
     _fetchLocalIp();
-    _initGemini();
     _loadModels();
     _startUdpListener();
     _initTts();
@@ -149,15 +156,6 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
     _flutterTts.stop();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _initGemini() {
-    if (GeminiConfig.apiKey.isNotEmpty && GeminiConfig.apiKey != 'YOUR_API_KEY_HERE') {
-      _geminiModel = GenerativeModel(
-        model: GeminiConfig.modelName,
-        apiKey: GeminiConfig.apiKey,
-      );
-    }
   }
 
   Future<void> _initTts() async {
@@ -470,7 +468,11 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
   }
 
   Future<String?> _correctSentenceWithGemini(String sentence) async {
-    if (_geminiModel == null) return null;
+    if (_geminiModel == null) {
+      Get.snackbar("تنبيه", "مفتاح API غير مكوّن. يرجى إضافته في gemini_config.dart",
+          backgroundColor: Colors.orange, colorText: Colors.white, duration: const Duration(seconds: 4));
+      return null;
+    }
     try {
       final prompt = "أنت مصحح لغوي عربي متخصص تعمل داخل قفاز يقوم بترجمة وتحويل لغة الاشارة الى لغة منطوقة ومقرءة. مهمتك الوحيدة هي تصحيح الأخطاء النحوية والصرفية والإملائية في الجملة المُعطاة, مثلا : انا اسم , تصبح , انا اسمي .\n"
           "القواعد: لا تضف كلمات جديدة، لا تحذف كلمات. أعد الجملة المصححة فقط بدون أي شرح. إذا كانت صحيحة، أعدها كما هي.\n\n"
@@ -480,12 +482,23 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
       return response.text?.trim() ?? sentence;
     } catch (e) {
       print("Gemini Correction Error: $e");
+      if (e.toString().contains('API key not valid') || e.toString().contains('leaked')) {
+        Get.snackbar("خطأ في الذكاء الاصطناعي", "مفتاح API غير صالح أو تم إيقافه. يرجى تغييره في الإعدادات.",
+            backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 4));
+      } else {
+        Get.snackbar("خطأ غير متوقع", "تصحيح النص: ${e.toString()}",
+            backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 5));
+      }
       return null;
     }
   }
 
   Future<String?> _translateTextWithGemini(String text, String langName) async {
-    if (_geminiModel == null) return null;
+    if (_geminiModel == null) {
+      Get.snackbar("تنبيه", "مفتاح API غير مكوّن. يرجى إضافته في gemini_config.dart",
+          backgroundColor: Colors.orange, colorText: Colors.white, duration: const Duration(seconds: 4));
+      return null;
+    }
     try {
       final prompt = "أنت مترجم محترف. ترجم النص العربي التالي إلى $langName.\n"
           "أعد الترجمة فقط بدون أي شرح وحافظ على المعنى.\n\n"
@@ -495,6 +508,13 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
       return response.text?.trim();
     } catch (e) {
       print("Gemini Translation Error: $e");
+      if (e.toString().contains('API key not valid') || e.toString().contains('leaked')) {
+        Get.snackbar("خطأ في الترجمة", "مفتاح API غير صالح أو تم إيقافه (Leaked). راجع ملف gemini_config.dart",
+            backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 4));
+      } else {
+        Get.snackbar("خطأ الترجمة", "حدث خطأ أثناء الترجمة: ${e.toString()}",
+            backgroundColor: Colors.redAccent, colorText: Colors.white, duration: const Duration(seconds: 5));
+      }
       return null;
     }
   }
