@@ -25,7 +25,6 @@ class KeyboardButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           child: Container(
-            height: 80,
             decoration: BoxDecoration(
               color: isSpecial ? Colors.grey[300] : Colors.white,
               borderRadius: BorderRadius.circular(8.0),

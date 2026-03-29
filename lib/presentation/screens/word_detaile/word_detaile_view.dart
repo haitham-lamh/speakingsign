@@ -31,6 +31,10 @@ class WordDetaileView extends StatelessWidget {
     });
 
     final colors = Theme.of(context).extension<AppColors>()!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final modelWidth = (screenWidth * 0.95).clamp(280.0, 500.0);
+    final modelHeight = (screenHeight * 0.5).clamp(300.0, 520.0);
 
     return Scaffold(
       backgroundColor: colors.scaffoldBackground,
@@ -38,94 +42,87 @@ class WordDetaileView extends StatelessWidget {
         children: [
           Expanded(child: WordDetailePageHeader()),
           Expanded(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned(
-                  bottom: 60,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 420,
-                        height: 470,
-                        child: TheModelViewer(
-                          hasFavBtn: false,
-                          borderColor: Colors.transparent,
-                        ),
-                      ),
-                      SizedBox(height: 16),
-                      Row(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      bottom: constraints.maxHeight * 0.08,
+                      left: 0,
+                      right: 0,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // IconButton(
-                          //   padding: EdgeInsets.all(12),
-                          //   style: ButtonStyle(
-                          //     backgroundColor: MaterialStatePropertyAll(
-                          //       colors.wordCard,
-                          //     ),
-                          //   ),
-                          //   alignment: Alignment.center,
-                          //   onPressed: () {},
-                          //   icon: Icon(
-                          //     Icons.favorite,
-                          //     color: colors.wordCardIcon,
-                          //     size: 32,
-                          //   ),
-                          // ),
-                          IconButton(
-                            padding: EdgeInsets.all(12),
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                colors.wordCard,
-                              ),
+                          SizedBox(
+                            width: modelWidth,
+                            height: modelHeight,
+                            child: TheModelViewer(
+                              hasFavBtn: false,
+                              borderColor: Colors.transparent,
                             ),
-                            alignment: Alignment.center,
-                            onPressed: () {
-                              favoriteController.toggleFavorite(key);
-                            },
-                            icon: Obx(() {
-                              final isFav = favoriteController.isFavorite(key);
-                              return Icon(
-                                isFav ? Icons.favorite : Icons.favorite_border,
-                                color: isFav ? Colors.red : colors.wordCardIcon,
-                                size: 32,
-                              );
-                            }),
                           ),
-                          SizedBox(width: 16),
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.wordCard,
-                              borderRadius: BorderRadius.circular(8),
-
-                              boxShadow: [
-                                BoxShadow(
-                                  color: colors.cardShadow,
-                                  spreadRadius: 3,
-                                  blurRadius: 4,
-                                  offset: Offset(4, 6),
+                          SizedBox(height: screenHeight * 0.02),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  padding: EdgeInsets.all(12),
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStatePropertyAll(
+                                      colors.wordCard,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  onPressed: () {
+                                    favoriteController.toggleFavorite(key);
+                                  },
+                                  icon: Obx(() {
+                                    final isFav = favoriteController.isFavorite(key);
+                                    return Icon(
+                                      isFav ? Icons.favorite : Icons.favorite_border,
+                                      color: isFav ? Colors.red : colors.wordCardIcon,
+                                      size: (screenWidth * 0.08).clamp(24.0, 34.0),
+                                    );
+                                  }),
+                                ),
+                                SizedBox(width: screenWidth * 0.04),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colors.wordCard,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: colors.cardShadow,
+                                        spreadRadius: 3,
+                                        blurRadius: 4,
+                                        offset: Offset(4, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    key,
+                                    style: TextStyle(
+                                      fontSize: (screenWidth * 0.045).clamp(14.0, 20.0),
+                                      color: colors.wordCardText,
+                                    ),
+                                  ),
                                 ),
                               ],
-                            ),
-
-                            child: Text(
-                              key,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: colors.wordCardText,
-                              ),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -133,3 +130,4 @@ class WordDetaileView extends StatelessWidget {
     );
   }
 }
+

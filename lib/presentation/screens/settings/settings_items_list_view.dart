@@ -59,13 +59,14 @@ class SettingsItemsListView extends StatelessWidget {
           controller.navigateToConctiontheglavs();
         },
       ),
+      /*
       SettingsItemModel(
         title: 'كاميرا التدريب',
         icon: Icons.phonelink_rounded,
         onTap: () {
           controller.navigateToCamera();
         },
-      ),
+      ),*/
 
       SettingsItemModel(
         title: 'حول التطبيق',

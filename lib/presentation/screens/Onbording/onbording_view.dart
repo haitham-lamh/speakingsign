@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:speaking_sign/config/theme/app_colors.dart';
 import 'package:speaking_sign/presentation/widgets/onboarding/custombutton.dart';
 import 'package:speaking_sign/presentation/widgets/onboarding/customcontrolls.dart';
 import 'package:speaking_sign/presentation/widgets/onboarding/customslider.dart';
@@ -29,12 +27,11 @@ class _OnboardingState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 70),
+            SizedBox(height: MediaQuery.sizeOf(context).height * 0.06),
 
             Expanded(
               flex: 2,
@@ -46,8 +43,9 @@ class _OnboardingState extends State<OnboardingView> {
               child: Column(
                 children: [
                   const Customcontrolls(),
-                  const SizedBox(height: 80),
+                  const Spacer(),
                   Custombutton(pageController: _pageController),
+                  SizedBox(height: MediaQuery.sizeOf(context).height * 0.04),
                 ],
               ),
             ),

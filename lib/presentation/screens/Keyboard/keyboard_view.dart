@@ -13,7 +13,8 @@ class Keyboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     return Scaffold(
       body: Column(
         children: [
@@ -73,7 +74,7 @@ class Keyboard extends StatelessWidget {
                     border: Border.all(color: Colors.purple.shade300, width: 2),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  height: 90,
+                  height: (screenHeight * 0.1).clamp(60.0, 100.0),
                   child: Obx(
                     () => ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -116,7 +117,7 @@ class Keyboard extends StatelessWidget {
                         }).toList(),
                         const SizedBox(height: 8),
                         SizedBox(
-                          height: 55,
+                          height: (screenHeight * 0.065).clamp(42.0, 60.0),
                           child: Row(
                             children: [
                               // مسح

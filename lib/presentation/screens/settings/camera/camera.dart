@@ -20,11 +20,11 @@ class Camera extends StatelessWidget {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(
-                right: 24,
-                left: 10,
+              padding: EdgeInsets.only(
+                right: MediaQuery.sizeOf(context).width * 0.05,
+                left: MediaQuery.sizeOf(context).width * 0.025,
                 bottom: 24,
-                top: 40,
+                top: MediaQuery.paddingOf(context).top + 10,
               ),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -44,13 +44,16 @@ class Camera extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "كاميرا التدريب",
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  Flexible(
+                    child: Text(
+                      "كاميرا التدريب",
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: (MediaQuery.sizeOf(context).width * 0.06).clamp(18.0, 28.0),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   IconButton(

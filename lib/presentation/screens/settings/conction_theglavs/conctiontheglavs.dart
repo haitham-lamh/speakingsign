@@ -10,6 +10,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:speaking_sign/controller/settings/conction_theglavs/conctionthglovs_controller.dart';
+import 'package:speaking_sign/data/static/static.dart';
+import 'package:speaking_sign/presentation/widgets/Keyboard/customkeyboard.dart';
 import 'gemini_config.dart';
 
 class Conctiontheglavs extends StatefulWidget {
@@ -51,8 +53,13 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
   // إعدادات الواجهة
   String _selectedLanguage = "العربية (بدون ترجمة)";
   String _selectedEmotion = "عادي 😐";
+  String _voiceGender = "امرأة";
   bool _ttsEnabled = true;
   bool _sentenceMode = false;
+  final TextEditingController _customNameController = TextEditingController();
+
+  int _lastEmotionIndex = -1;
+  int _lastLangIndex = -1;
 
   // عرض النتائج
   String _statusText = "الحالة: في انتظار البدء";
@@ -155,6 +162,7 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
     _interpreter?.close();
     _flutterTts.stop();
     _scrollController.dispose();
+    _customNameController.dispose();
     super.dispose();
   }
 
@@ -215,6 +223,30 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                   List<double> vals = parts.sublist(1, 15).map((e) => double.parse(e)).toList();
                   _latestData[gloveId] = vals;
                   _packetsReceived++;
+                  
+                  if (gloveId == 'R' && parts.length >= 17) {
+                    int emotionIndex = double.parse(parts[parts.length - 2]).toInt();
+                    int langIndex = double.parse(parts[parts.length - 1]).toInt();
+                    
+                    bool changed = false;
+                    
+                    if (emotionIndex >= 0 && emotionIndex < _emotions.length && emotionIndex != _lastEmotionIndex) {
+                      _selectedEmotion = _emotions.keys.elementAt(emotionIndex);
+                      _lastEmotionIndex = emotionIndex;
+                      changed = true;
+                    }
+                    
+                    if (langIndex >= 0 && langIndex < _languages.length && langIndex != _lastLangIndex) {
+                      _selectedLanguage = _languages.keys.elementAt(langIndex);
+                      _lastLangIndex = langIndex;
+                      changed = true;
+                    }
+                    
+                    if (changed && mounted) {
+                      setState(() {});
+                    }
+                  }
+
                   if (_packetsReceived % 50 == 0) {
                     if (mounted) setState(() {});
                   }
@@ -354,6 +386,10 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
 
       predictedLabel = maxIndex != -1 ? _classNames[maxIndex] : "---";
 
+      if (predictedLabel == "هيثم" && _customNameController.text.trim().isNotEmpty) {
+        predictedLabel = _customNameController.text.trim();
+      }
+
       setState(() {
         _currentPrediction = predictedLabel!;
         _currentConfidence = maxProb;
@@ -475,8 +511,8 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
     }
     try {
       final prompt = "أنت مصحح لغوي عربي متخصص تعمل داخل قفاز يقوم بترجمة وتحويل لغة الاشارة الى لغة منطوقة ومقرءة. مهمتك الوحيدة هي تصحيح الأخطاء النحوية والصرفية والإملائية في الجملة المُعطاة, مثلا : انا اسم , تصبح , انا اسمي .\n"
-          "القواعد: لا تضف كلمات جديدة، لا تحذف كلمات. أعد الجملة المصححة فقط بدون أي شرح. إذا كانت صحيحة، أعدها كما هي.\n\n"
-          "صحح هذه الجملة: $sentence";
+          "القواعد: لا تضف كلمات جديدة، لا تحذف كلمات. أعد الجملة المصححة فقط بدون أي شرح. إذا كانت صحيحة، أعدها كما هي . لن تصلك حروف الجر يجب ان تضيفها انت وصحح الجملة بالكامل , مثلا : شكرا لكم حسن استماع , تصبح , شكرا لكم على حسن الاستماع .\n\n"
+ 	          "صحح هذه الجملة: $sentence";
       final content = [Content.text(prompt)];
       final response = await _geminiModel!.generateContent(content);
       return response.text?.trim() ?? sentence;
@@ -523,8 +559,53 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
     if (!_ttsEnabled) return;
     try {
       await _flutterTts.setLanguage(langCode);
+      
+      // محاولة البحث عن أصوات الذكور أو الإناث الحقيقية في النظام بدلاً من تغيير حدة الصوت فقط
+      var voices = await _flutterTts.getVoices;
+      bool voiceSet = false;
+      
+      if (voices != null) {
+        for (var voice in voices) {
+          if (voice["locale"] != null && voice["locale"].toString().startsWith(langCode.substring(0, 2))) {
+            String voiceName = voice["name"].toString().toLowerCase();
+            
+            // في أنظمة الأندرويد والآيفون، تحتوي الأسماء على كلمات تدل على الجنس أو تنتهي بأحرف محددة في جوجل TTS
+            bool isMaleVoice = voiceName.contains("male") || 
+                               voiceName.contains("maged") || // صوت ذكر عربي في آيفون
+                               voiceName.contains("tarik") || // صوت ذكر عربي في آيفون
+                               voiceName.endsWith("-b") ||    // Google TTS للذكور
+                               voiceName.endsWith("-c");      // Google TTS للذكور
+            
+            bool isFemaleVoice = voiceName.contains("female") || 
+                                 voiceName.contains("laila") || // صوت أنثى عربي في آيفون
+                                 voiceName.contains("noura") || // صوت أنثى عربي 
+                                 voiceName.endsWith("-a") ||    // Google TTS للإناث
+                                 voiceName.endsWith("-d");      // Google TTS للإناث
+            
+            if (_voiceGender == "رجل" && isMaleVoice) {
+              await _flutterTts.setVoice({"name": voice["name"], "locale": voice["locale"]});
+              voiceSet = true;
+              break;
+            } else if (_voiceGender == "امرأة" && isFemaleVoice) {
+              await _flutterTts.setVoice({"name": voice["name"], "locale": voice["locale"]});
+              voiceSet = true;
+              break;
+            }
+          }
+        }
+      }
+      
       var emotion = _emotions[_selectedEmotion]!;
-      await _flutterTts.setPitch(emotion['pitch'] as double);
+
+      // إذا لم يجد النظام صوت ذكر/أنثى محدد، سنلجأ لتغيير الـ Pitch (حدة الصوت) كحل احتياطي، ولكن بقيم طبيعية أكثر
+      double basePitch = 1.0;
+      if (!voiceSet) {
+        basePitch = _voiceGender == "رجل" ? 0.85 : 1.15; // قيم أقرب للطبيعي بدلاً من 0.6 التي كانت تجعله آلياً
+      }
+
+      double emotionPitch = emotion['pitch'] as double;
+
+      await _flutterTts.setPitch((basePitch * emotionPitch).clamp(0.1, 2.0));
       await _flutterTts.setSpeechRate(emotion['rate'] as double);
       await _flutterTts.setVolume(emotion['volume'] as double);
       await _flutterTts.speak(text);
@@ -549,8 +630,117 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
     return "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}:${DateTime.now().second.toString().padLeft(2, '0')}";
   }
 
+  void _showCustomKeyboard() {
+    FocusScope.of(context).unfocus(); // إخفاء لوحة المفاتيح الافتراضية إذا كانت ظاهرة
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final screenHeight = MediaQuery.sizeOf(context).height;
+        return Container(
+          height: (screenHeight * 0.5).clamp(300.0, 500.0),
+          decoration: const BoxDecoration(
+            color: Color(0xFFF7F9FC),
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 16),
+          child: Column(
+            children: [
+              // زر إغلاق
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    ...keboardlist.map((row) {
+                      return Expanded(
+                        child: Row(
+                          children: row.map((sign) {
+                            return KeyboardButton(
+                              label: sign.char!,
+                              imagePath: sign.assetpath!,
+                              onPressed: () {
+                                _customNameController.text += sign.char!;
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }).toList(),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: (screenHeight * 0.065).clamp(42.0, 60.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_customNameController.text.isNotEmpty) {
+                                    _customNameController.text = _customNameController.text.substring(0, _customNameController.text.length - 1);
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 181, 115, 115),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                                child: const Text('مســح', style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _customNameController.text += " ";
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey.shade200,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                                child: const Text('مسافـــة', style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 203, 168, 254),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                                ),
+                                child: const Text('تم', style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "Cairo", fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final titleFontSize = (screenWidth * 0.05).clamp(16.0, 24.0);
+    final bodyFontSize = (screenWidth * 0.035).clamp(12.0, 16.0);
+    final predictionFontSize = (screenWidth * 0.09).clamp(28.0, 42.0);
+    
     Color confidenceColor = Colors.grey;
     if (_currentConfidence >= 0.8) confidenceColor = Colors.green;
     else if (_currentConfidence >= 0.5) confidenceColor = Colors.orange;
@@ -565,7 +755,12 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
             // الهيدر
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(right: 24, left: 10, bottom: 24, top: 40),
+              padding: EdgeInsets.only(
+                right: screenWidth * 0.05,
+                left: screenWidth * 0.025,
+                bottom: screenHeight * 0.025,
+                top: MediaQuery.paddingOf(context).top + 10,
+              ),
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xff8B3DFF), Color.fromARGB(255, 174, 143, 220)],
@@ -577,7 +772,7 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("التعرف على لغة الإشارة", style: TextStyle(fontFamily: 'Cairo', fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Flexible(child: Text("التعرف على لغة الإشارة", style: TextStyle(fontFamily: 'Cairo', fontSize: titleFontSize, fontWeight: FontWeight.bold, color: Colors.white), overflow: TextOverflow.ellipsis)),
                   IconButton(
                     onPressed: () => controller.navigateToSetting(),
                     icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
@@ -592,6 +787,23 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // حقل الاسم المخصص
+                    TextField(
+                      controller: _customNameController,
+                      readOnly: true,
+                      onTap: _showCustomKeyboard,
+                      decoration: InputDecoration(
+                        labelText: "اسم ذو الهمة العالية",
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+                    ),
+                    const SizedBox(height: 12),
+
                     // حالة الاتصال
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -602,8 +814,8 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                       ),
                       child: Column(
                         children: [
-                          const Text("IP الخاص بالجوال (ضعه في شريحة ESP):", style: TextStyle(color: Colors.blueGrey, fontSize: 13, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-                          Text(_localIp, style: const TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                          Text("IP الخاص بالجوال (ضعه في شريحة ESP):", style: TextStyle(color: Colors.blueGrey, fontSize: bodyFontSize, fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
+                          Text(_localIp, style: TextStyle(color: Colors.blue, fontSize: (screenWidth * 0.05).clamp(16.0, 22.0), fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                         ],
                       ),
                     ),
@@ -654,7 +866,7 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                                           children: [
                                             Text(_emotions[value]!['icon'], style: const TextStyle(fontSize: 18)),
                                             const SizedBox(width: 8),
-                                            Text(value.replaceAll(RegExp(r'[^\w\s]'), '').trim(), style: const TextStyle(fontSize: 14)),
+                                            Text(value.replaceAll(RegExp(r'[^\w\s]'), '').trim(), style: const TextStyle(fontSize: 50)),
                                           ],
                                         ),
                                       );
@@ -698,6 +910,28 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                         ),
                       ],
                     ),
+                    
+                    // اختيار جنس صوت القارئ
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("صوت القارئ:", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                        const SizedBox(width: 16),
+                        Radio<String>(
+                          value: "رجل",
+                          groupValue: _voiceGender,
+                          onChanged: (val) => setState(() => _voiceGender = val!),
+                        ),
+                        const Text("رجل", style: TextStyle(fontSize: 14, fontFamily: 'Cairo')),
+                        const SizedBox(width: 16),
+                        Radio<String>(
+                          value: "امرأة",
+                          groupValue: _voiceGender,
+                          onChanged: (val) => setState(() => _voiceGender = val!),
+                        ),
+                        const Text("امرأة", style: TextStyle(fontSize: 14, fontFamily: 'Cairo')),
+                      ],
+                    ),
 
                     const SizedBox(height: 15),
 
@@ -732,13 +966,14 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                             const SizedBox(height: 8),
                             Text(
                               _currentPrediction,
-                              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: confidenceColor, fontFamily: 'Cairo'),
+                              style: TextStyle(fontSize: predictionFontSize, fontWeight: FontWeight.bold, color: confidenceColor, fontFamily: 'Cairo'),
                             ),
                             if (_currentTranslation.isNotEmpty) ...[
                               const SizedBox(height: 8),
                               Text(
                                 "🌐 $_currentTranslation",
-                                style: const TextStyle(fontSize: 22, color: Colors.purple, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+
+                                style: TextStyle(fontSize: (screenWidth * 0.055).clamp(16.0, 24.0), color: Colors.purple, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
                               ),
                             ],
                             const SizedBox(height: 8),
@@ -785,7 +1020,7 @@ class _ConctiontheglavsState extends State<Conctiontheglavs> {
                     // سجل التنبؤات
                     const Text("السجل:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                     Container(
-                      height: 120,
+                      height: (screenHeight * 0.15).clamp(100.0, 150.0),
                       margin: const EdgeInsets.only(top: 8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(color: Colors.white, border: Border.all(color: Colors.grey.shade300), borderRadius: BorderRadius.circular(12)),

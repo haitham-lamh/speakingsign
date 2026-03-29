@@ -35,18 +35,21 @@ class SelectThemeBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildOption(
+                context: context,
                 index: 0,
                 label: "أوتوماتيك",
                 image: "assets/images/mode_auto.jpg",
                 textColor: colors.wordCardText!,
               ),
               buildOption(
+                context: context,
                 index: 1,
                 label: "ليل",
                 image: "assets/images/mode_dark.jpg",
                 textColor: colors.wordCardText!,
               ),
               buildOption(
+                context: context,
                 index: 2,
                 label: "نهار",
                 image: "assets/images/mode_light.jpg",
@@ -72,6 +75,7 @@ class SelectThemeBottomSheet extends StatelessWidget {
   }
 
   Widget buildOption({
+    required BuildContext context,
     required int index,
     required String label,
     required String image,
@@ -90,8 +94,8 @@ class SelectThemeBottomSheet extends StatelessWidget {
 
             AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              width: 105,
-              height: 220,
+              width: (MediaQuery.sizeOf(context).width * 0.26).clamp(80.0, 120.0),
+              height: (MediaQuery.sizeOf(context).height * 0.28).clamp(160.0, 240.0),
               padding: EdgeInsets.all(3),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),

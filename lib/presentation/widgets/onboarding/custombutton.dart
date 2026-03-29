@@ -14,6 +14,8 @@ class Custombutton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
     final controller = Get.find<OnboardingController>();
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final horizontalPadding = (screenWidth * 0.28).clamp(60.0, 140.0);
 
     return MaterialButton(
       textColor: Colors.white,
@@ -36,7 +38,7 @@ class Custombutton extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
       ),
       color: Color(0xff8B3DFF),
-      padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 15),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 15),
       child: const Text(
         "استمـــرار",
         style: TextStyle(
@@ -48,3 +50,4 @@ class Custombutton extends StatelessWidget {
     );
   }
 }
+

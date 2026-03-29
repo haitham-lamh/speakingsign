@@ -7,6 +7,9 @@ class CustomTopHeader2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final fontSize = (screenWidth * 0.045).clamp(14.0, 20.0);
+    
     return Container(
       width: double.infinity,
       height: 60 + MediaQuery.paddingOf(context).top,
@@ -40,15 +43,18 @@ class CustomTopHeader2 extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 230),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontFamily: "Cairo",
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: EdgeInsets.only(right: screenWidth * 0.06),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Cairo",
+                    fontSize: fontSize,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -58,3 +64,4 @@ class CustomTopHeader2 extends StatelessWidget {
     );
   }
 }
+

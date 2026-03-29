@@ -11,6 +11,7 @@ class AboutView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -20,9 +21,9 @@ class AboutView extends StatelessWidget {
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(
-                  right: 24,
-                  left: 10,
+                padding: EdgeInsets.only(
+                  right: screenWidth * 0.05,
+                  left: screenWidth * 0.025,
                   bottom: 24,
                   top: 24,
                 ),
@@ -44,7 +45,7 @@ class AboutView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
+                    Flexible(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [

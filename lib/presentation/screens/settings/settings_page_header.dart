@@ -6,6 +6,9 @@ class SettingsPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final headerHeight = (screenHeight * 0.22).clamp(140.0, 220.0);
+    
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -15,81 +18,89 @@ class SettingsPageHeader extends StatelessWidget {
         ),
       ),
       width: double.infinity,
-      height: 180,
-      child: Stack(
-        children: [
-          Positioned(
-            top: 30,
-            left: 40,
-            child: Icon(Icons.back_hand, size: 28, color: Colors.white30),
-          ),
-          Positioned(
-            top: 90,
-            left: 30,
-            child: Icon(Icons.spa_outlined, size: 28, color: Colors.white30),
-          ),
-          Positioned(
-            top: 65,
-            left: 120,
-            child: Icon(
-              Icons.spatial_audio_off_rounded,
-              size: 28,
-              color: Colors.white30,
-            ),
-          ),
-          Positioned(
-            top: 20,
-            right: 140,
-            child: Icon(Icons.star, size: 24, color: Colors.white30),
-          ),
-          Positioned(
-            top: 60,
-            right: 110,
-            child: Icon(
-              Icons.hearing_outlined,
-              size: 30,
-              color: Colors.white30,
-            ),
-          ),
-          Positioned(
-            top: 35,
-            right: 40,
-            child: Icon(Icons.back_hand, size: 28, color: Colors.white30),
-          ),
-          Positioned(
-            top: 20,
-            left: 130,
-            child: Icon(Icons.spa_outlined, size: 28, color: Colors.white30),
-          ),
-          Positioned(
-            top: 80,
-            right: 65,
-            child: Icon(
-              Icons.spatial_audio_off_rounded,
-              size: 28,
-              color: Colors.white30,
-            ),
-          ),
-          Positioned(
-            top: 120,
-            right: 170,
-            child: Icon(Icons.star, size: 24, color: Colors.white30),
-          ),
-          Positioned(
-            top: 120,
-            left: 90,
-            child: Icon(
-              Icons.hearing_outlined,
-              size: 30,
-              color: Colors.white30,
-            ),
-          ),
-          Positioned(
-            top: 130,
-            right: 70,
-            child: Icon(Icons.spa_outlined, size: 28, color: Colors.white30),
-          ),
-        ],
+      height: headerHeight,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final w = constraints.maxWidth;
+          final h = constraints.maxHeight;
+          final iconSize = (h * 0.16).clamp(20.0, 30.0);
+
+          return Stack(
+            children: [
+              Positioned(
+                top: h * 0.17,
+                left: w * 0.1,
+                child: Icon(Icons.back_hand, size: iconSize, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.5,
+                left: w * 0.08,
+                child: Icon(Icons.spa_outlined, size: iconSize, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.36,
+                left: w * 0.3,
+                child: Icon(
+                  Icons.spatial_audio_off_rounded,
+                  size: iconSize,
+                  color: Colors.white30,
+                ),
+              ),
+              Positioned(
+                top: h * 0.11,
+                right: w * 0.35,
+                child: Icon(Icons.star, size: iconSize * 0.85, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.33,
+                right: w * 0.28,
+                child: Icon(
+                  Icons.hearing_outlined,
+                  size: iconSize * 1.07,
+                  color: Colors.white30,
+                ),
+              ),
+              Positioned(
+                top: h * 0.19,
+                right: w * 0.1,
+                child: Icon(Icons.back_hand, size: iconSize, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.11,
+                left: w * 0.33,
+                child: Icon(Icons.spa_outlined, size: iconSize, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.44,
+                right: w * 0.16,
+                child: Icon(
+                  Icons.spatial_audio_off_rounded,
+                  size: iconSize,
+                  color: Colors.white30,
+                ),
+              ),
+              Positioned(
+                top: h * 0.67,
+                right: w * 0.43,
+                child: Icon(Icons.star, size: iconSize * 0.85, color: Colors.white30),
+              ),
+              Positioned(
+                top: h * 0.67,
+                left: w * 0.23,
+                child: Icon(
+                  Icons.hearing_outlined,
+                  size: iconSize * 1.07,
+                  color: Colors.white30,
+                ),
+              ),
+              Positioned(
+                top: h * 0.72,
+                right: w * 0.18,
+                child: Icon(Icons.spa_outlined, size: iconSize, color: Colors.white30),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

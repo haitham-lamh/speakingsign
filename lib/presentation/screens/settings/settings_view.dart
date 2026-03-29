@@ -10,6 +10,11 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final logoSize = (screenWidth * 0.55).clamp(160.0, 260.0);
+    final titleFontSize = (screenWidth * 0.05).clamp(16.0, 22.0);
+
     return Scaffold(
       backgroundColor: Color(0xff8B3DFF),
       body: Column(
@@ -26,13 +31,13 @@ class SettingsView extends StatelessWidget {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
                 child: Column(
                   children: [
                     Text(
                       'الإعــدادات',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: titleFontSize,
                         color: colors.wordCardText,
                       ),
                     ),
@@ -44,13 +49,16 @@ class SettingsView extends StatelessWidget {
                           SettingsItemsListView(),
 
                           Positioned(
-                            top: -230,
-                            left: 118,
-                            child: Image.asset(
-                              'assets/images/logo3.png',
-                              fit: BoxFit.cover,
-                              width: 240,
-                              height: 240,
+                            top: -(screenHeight * 0.28).clamp(180.0, 250.0),
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Image.asset(
+                                'assets/images/logo3.png',
+                                fit: BoxFit.cover,
+                                width: logoSize,
+                                height: logoSize,
+                              ),
                             ),
                           ),
                         ],
@@ -66,3 +74,4 @@ class SettingsView extends StatelessWidget {
     );
   }
 }
+
